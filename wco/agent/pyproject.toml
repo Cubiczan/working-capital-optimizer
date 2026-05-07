@@ -1,6 +1,6 @@
 [build-system]
 requires = ["hatchling"]
-build-backend = "hatchling.backends"
+build-backend = "hatchling.build"
 
 [project]
 name = "wco-agent"
@@ -27,7 +27,6 @@ dependencies = [
     "google-genai>=1.0.0",
     "openinference-instrumentation-google-genai>=0.1.0",
     "openinference-instrumentation-langchain>=0.1.0",
-    "phoenix>=7.0.0",
     "arize-phoenix>=7.0.0",
     "langchain-google-genai>=2.0.0",
     "langchain-core>=0.3.0",
