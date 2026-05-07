@@ -1,121 +1,78 @@
-# WCO 3-Minute Demo Video Script
+# Working Capital Optimizer — 3-Minute Demo Video Script
 
-## Timing Guide
-| Segment | Time | Duration |
-|---------|------|----------|
-| Hook + Problem | 0:00 | 30s |
-| Architecture Overview | 0:30 | 20s |
-| Live Demo — Dashboard | 0:50 | 60s |
-| Phoenix Cloud Traces | 1:50 | 30s |
-| Self-Improvement Loop | 2:20 | 20s |
-| Summary + CTA | 2:40 | 20s |
+## Setup Instructions
+1. Open `wco-demo.html` in Chrome/Edge (fullscreen recommended — press F11)
+2. Use OBS Studio, Loom, or built-in screen recorder
+3. The presentation auto-plays for exactly 3 minutes
+4. Record your screen + narrate using the script below
+5. Export as MP4, upload to YouTube
 
 ---
 
-## Script
+## Narration Script with Timing
 
-### [0:00–0:30] Hook — The Problem
+### [0:00–0:10] Title Slide
 
-**[Screen: Title card with WCO logo + "Cash Conversion Cycle" visual]**
+> "Hi, I'm presenting the Working Capital Optimizer — an AI agent mesh built for the Google Cloud Rapid Agent Hackathon on the Arize track."
 
-"As a CFO of a manufacturing company, I stare at three numbers every day: Days Sales Outstanding, Days Inventory Outstanding, and Days Payable Outstanding. Together they form the Cash Conversion Cycle — how fast we turn inventory into cash. But here's the problem: my sales team owns AR, procurement owns AP, and operations owns inventory. Each team optimizes locally while I bear the systemic cost."
+*(Slide auto-advances)*
 
-**[Screen: Split view — AR aging report, AP payment queue, inventory dashboard — all disconnected]**
+### [0:10–0:30] The Problem
 
-"Nobody is looking at the full picture. That's why I built the Working Capital Optimizer."
+> "Manufacturing CFOs manage a two-point-four trillion dollar working capital puzzle. The average cash conversion cycle sits at fifty-eight days, and one in three companies can't predict their cash flow even thirty days out. Existing tools give you dashboards but not decisions. That's the problem we solve."
 
----
+*(Slide auto-advances)*
 
-### [0:30–0:50] Architecture — How It Works
+### [0:30–0:55] Architecture
 
-**[Screen: Architecture diagram — 4 agents → Orchestrator → Phoenix Cloud]**
+> "Here's how it works. A Next.js dashboard talks to a FastAPI backend running a four-agent orchestrator. Each agent — AR, AP, Inventory, and Cash Flow — is powered by Gemini 2.5 Flash using the Agent Development Kit with a custom expand-then-compress reasoning cycle. Every single LLM call is instrumented with OpenInference and traced to Arize Phoenix Cloud in real time."
 
-"WCO is a multi-agent AI system with four specialized agents, each powered by Google Gemini 2.5 Flash. The AR Agent analyzes receivables aging and collection patterns. The AP Agent optimizes payment timing and evaluates dynamic discounts. The Inventory Agent classifies SKUs and calculates safety stock. And the Cash Flow Agent synthesizes everything into a 13-week forecast."
+*(Slide auto-advances)*
 
-**[Screen: Diagram zooms into Phoenix Cloud + CockroachDB]**
+### [0:55–1:20] The Four Agents
 
-"Every Gemini call is traced with OpenInference and sent to Arize Phoenix Cloud. Every recommendation is evaluated by an LLM-as-Judge on four dimensions. And the results persist to CockroachDB."
+> "Let me walk through the agents. The AR Agent analyzes receivables aging and collection patterns to find early-payment discount opportunities. The AP Agent optimizes payment timing across vendors, calculating the annualized return on dynamic discounting. The Inventory Agent classifies SKUs by ABC analysis and flags safety-stock issues. Finally, the Cash Flow Agent consolidates everything into a unified thirteen-week forecast with liquidity risk flags."
 
----
+*(Slide auto-advances)*
 
-### [0:50–1:50] Live Demo — Dashboard
+### [1:20–1:45] CCC Formula & Impact
 
-**[Screen: Open browser → localhost:3000 → WCO Dashboard]**
+> "The Cash Conversion Cycle — DSO plus DIO minus DPO — is the key metric. In our sample dataset modeling a fourteen-million-dollar manufacturer, we start at a CCC of seventy-five days. After the agents run, they identify actions that bring it down to forty-seven days. That's a thirty-seven percent improvement — which for this company means roughly two-point-eight million dollars freed up in working capital."
 
-"Let me show you the dashboard. Here's our sample company — a $14.4 million manufacturer with $2.5 million in cash and a declining cash position."
+*(Slide auto-advances)*
 
-**[Action: Click "Run Analysis" button]**
+### [1:45–2:10] Arize Phoenix Integration
 
-"When I click Run Analysis, the orchestrator fires up all four agents in topological order. AR, AP, and Inventory run in parallel — they don't depend on each other. Then Cash Flow runs last, receiving all their outputs."
+> "Now here's what makes this a proper Arize track submission. First, every Gemini call is traced using OpenInference instrumentation. Second, traces export to Phoenix Cloud with bearer authentication. Third, we use LLM-as-Judge — Gemini Flash evaluates every recommendation on four dimensions: relevance, actionability, financial impact, and risk awareness. Fourth — and this is the self-improvement loop — when rolling average eval scores drop below a threshold, the system generates targeted prompt amendments and applies them to the next run. The agents literally get better over time."
 
-**[Screen: Agent cards animate — showing status idle → running → complete]**
+*(Slide auto-advances)*
 
-"You can see each agent completing — the AR Agent found 18 invoices across 5 aging buckets, the AP Agent analyzed 12 vendor invoices with 4 discount opportunities, and the Inventory Agent classified 10 SKUs into ABC categories."
+### [2:10–2:35] Dashboard Preview
 
-**[Screen: CCC summary cards populate with DSO, DIO, DPO, CCC values]**
+> "The dashboard brings it all together. The main CCC gauge shows your current cycle. Agent cards report status and recent findings. A thirteen-week forecast chart shows projected cash position with confidence bands. And the recommendation feed surfaces the highest-impact actions ranked by the LLM-as-Judge scores."
 
-"Here's our Cash Conversion Cycle: DSO of 48 days, DIO of 72 days, DPO of only 37 days, giving us a CCC of 83 days. The industry benchmark is 60. We're leaving 23 days of cash on the table."
+*(Slide auto-advances)*
 
-**[Screen: Scroll to 13-week cash forecast chart]**
+### [2:35–3:00] Closing
 
-"The Cash Flow Agent built a 13-week rolling forecast. You can see our cash position declining through weeks 4 through 7 — that's our liquidity danger zone."
-
-**[Screen: Scroll to recommendations feed]**
-
-"Here are the actionable recommendations — each tagged with confidence level and financial impact. For example, the AP Agent identified three early-payment discounts where the annualized return exceeds our 8% cost of capital. Taking those discounts would save $12,000 per year."
+> "Working Capital Optimizer: four specialized AI agents, full Phoenix Cloud observability, and a self-improvement loop that makes every run smarter than the last. Check out the repo at github.com/Cubiczan/working-capital-optimizer. Thanks for watching."
 
 ---
 
-### [1:50–2:20] Phoenix Cloud Traces
+## Quick Reference: What Judges Need to See
 
-**[Screen: Switch to app.phoenix.arize.com — show trace dashboard]**
-
-"Now here's what makes this different from a typical AI demo. Every single Gemini call is fully traced in Arize Phoenix Cloud."
-
-**[Screen: Click on a trace — show the span details with prompt, response, latency]**
-
-"I can drill into any agent's trace, see the exact prompt we sent, the raw LLM response, the parsed JSON, and the grounding check. This isn't a black box — judges can verify every claim."
-
-**[Screen: Show Phoenix MCP server config]**
-
-"We also configured the Phoenix MCP server, which means the agents can introspect their own traces at runtime — querying past prompts and identifying failure patterns."
-
----
-
-### [2:20–2:40] Self-Improvement Loop
-
-**[Screen: Evaluation scores panel — show radar/bar chart of 4 dimensions]**
-
-"Each recommendation is evaluated by an LLM-as-Judge on four dimensions: relevance, actionability, financial impact, and risk awareness. Here you can see that our first run scored 6.2 overall."
-
-**[Screen: Show score improving from 6.2 → 7.1 → 7.8 across three runs]**
-
-"The self-improvement loop reads these scores, identifies systematic weaknesses — like recommendations that lack dollar amounts scoring 40% lower — and adjusts the agent prompts. After three iterations, our average score climbed from 6.2 to 7.8."
-
----
-
-### [2:40–3:00] Summary + CTA
-
-**[Screen: Back to WCO Dashboard — full view]**
-
-"Working Capital Optimizer proves that multi-agent AI can deliver genuine domain expertise — not just summaries, but actionable financial recommendations that a CFO can execute tomorrow."
-
-**[Screen: GitHub URL + Architecture diagram]**
-
-"The code is open source. It's built with Gemini, Arize Phoenix, CockroachDB, and Next.js. Every agent is specialized, every trace is observable, and the system gets better on its own."
-
-**[Screen: End card — WCO logo + Devpost URL]**
-
-"Thank you."
-
----
+| Time | Must Show |
+|------|-----------|
+| 0:30 | Multi-agent architecture (4 agents) |
+| 0:55 | Gemini + ADK runtime (code-owned) |
+| 1:45 | Phoenix tracing + MCP + LLM-as-Judge |
+| 2:00 | Self-improvement loop mechanism |
+| 2:35 | Dashboard + repo link |
 
 ## Recording Tips
-
-- **Resolution**: 1920×1080 minimum
-- **Browser**: Use a clean Chrome profile with the dashboard fullscreen (F11)
-- **Phoenix Cloud**: Pre-login to app.phoenix.arize.com so you can switch tabs quickly
-- **Timing**: Practice the click-through once before recording
-- **Voice**: Speak slowly and clearly — 180 words per minute max
-- **Edits**: Cut loading/spinner moments — jump straight to results appearing
-- **Format**: MP4 or MOV, under 5 MB for Devpost (may need to compress)
+- **Resolution:** 1920×1080 (1080p minimum)
+- **Audio:** Use a decent microphone — clear narration matters more than fancy visuals
+- **Pacing:** Don't rush — the slides auto-advance on a comfortable timer
+- **If you mess up:** Just restart the HTML — it resets to slide 1 on page reload
+- **YouTube title suggestion:** "Working Capital Optimizer — Google Cloud Rapid Agent Hackathon"
+- **YouTube description:** Link to the GitHub repo + Devpost submission
