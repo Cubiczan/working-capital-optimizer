@@ -176,15 +176,18 @@ class WorkingCapitalOrchestrator:
     Parameters:
         agents: List of domain-specialist agents to orchestrate.
         context: Optional pre-populated context engine.
+        auto_improve: Whether to trigger self-improvement after each run.
     """
 
     def __init__(
         self,
         agents: list[GeminiMeshAgent],
         context: ContextEngine | None = None,
+        auto_improve: bool = True,
     ) -> None:
         self._agents = _topological_sort(agents)
         self._context = context or ContextEngine()
+        self._auto_improve = auto_improve
 
         logger.info(
             "Orchestrator initialised with %d agents in order: %s",
@@ -265,6 +268,33 @@ class WorkingCapitalOrchestrator:
             ccc.get("ccc", 0),
             len(recommendations),
         )
+
+        # ── Trigger self-improvement loop (async, non-blocking) ────────
+        if self._auto_improve:
+            try:
+                from wco.eval.self_improvement import SelfImprovementEngine
+
+                engine = SelfImprovementEngine()
+                improvement = await engine.run_improvement_cycle()
+                if improvement.amendments_applied:
+                    logger.info(
+                        "Self-improvement: %d amendments applied for agents: %s",
+                        len(improvement.amendments_applied),
+                        list(improvement.amendments_applied.keys()),
+                    )
+                    report.recommendations.append(
+                        {
+                            "agent": "Self-Improvement",
+                            "capability": "self_improvement",
+                            "insight": f"Self-improvement cycle found {len(improvement.patterns_found)} weakness patterns",
+                            "recommendation": f"Prompt amendments applied for: {', '.join(improvement.amendments_applied.keys())}",
+                            "expected_impact": "Measurably improved recommendation quality on next run",
+                            "confidence": "high",
+                        }
+                    )
+            except Exception as exc:
+                logger.debug("Self-improvement cycle skipped: %s", exc)
+
         return report
 
     # ── Helpers ──────────────────────────────────────────────────────────

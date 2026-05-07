@@ -180,6 +180,50 @@ async def _run_evaluation(args: argparse.Namespace) -> None:
     print(json.dumps(result.to_dict(), indent=2, default=str))
 
 
+def cmd_improve(args: argparse.Namespace) -> None:
+    """Run the self-improvement cycle."""
+    _setup_logging(args.verbose)
+
+    asyncio.run(_run_improvement())
+
+
+async def _run_improvement() -> None:
+    """Execute the self-improvement cycle and print results."""
+    from wco.eval.self_improvement import SelfImprovementEngine
+
+    logger.info("Starting self-improvement cycle...")
+    engine = SelfImprovementEngine()
+
+    report = await engine.run_improvement_cycle()
+
+    result = {
+        "report_id": report.report_id,
+        "timestamp": report.timestamp,
+        "patterns_found": [
+            {
+                "agent": p.agent_name,
+                "dimension": p.dimension,
+                "avg_score": p.avg_score,
+                "eval_count": p.eval_count,
+            }
+            for p in report.patterns_found
+        ],
+        "amendments_applied": report.amendments_applied,
+        "amendments_skipped": report.amendments_skipped,
+    }
+
+    print(json.dumps(result, indent=2, default=str))
+
+    if not report.patterns_found:
+        logger.info("No weakness patterns found — agents are performing well")
+    else:
+        logger.info(
+            "Found %d patterns, applied %d amendments",
+            len(report.patterns_found),
+            len(report.amendments_applied),
+        )
+
+
 # ── Argument parser ───────────────────────────────────────────────────────
 
 
@@ -235,6 +279,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_eval.add_argument("--verbose", "-v", action="store_true")
     p_eval.set_defaults(func=cmd_evaluate)
+
+    # improve
+    p_improve = sub.add_parser("improve", help="Run self-improvement cycle")
+    p_improve.add_argument("--verbose", "-v", action="store_true")
+    p_improve.set_defaults(func=cmd_improve)
 
     return parser
 

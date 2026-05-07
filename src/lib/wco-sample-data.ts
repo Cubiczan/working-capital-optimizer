@@ -1,0 +1,62 @@
+import type { ARInvoice, APInvoice, SKU, AnalyzeRequest } from './wco-types'
+
+/** Sample data for a $14.4M/year precision metal parts manufacturer. */
+export function getSampleData(): AnalyzeRequest {
+  return {
+    problem_description:
+      'Optimize working capital for Precision Metal Parts Co., a $14.4M/year manufacturer. Current cash position is $2.5M but declining. The CFO needs actionable recommendations to improve the Cash Conversion Cycle and maintain liquidity through Q2.',
+    ar_invoices: [
+      { invoice_id: 'AR-2024-001', customer_id: 'CUST-001', customer_name: 'AutoDrive Systems', amount: 185000, issue_date: '2024-01-15', due_date: '2024-02-14', payment_terms_days: 30, days_outstanding: 12, aging_bucket: 'Current', payment_status: 'unpaid' },
+      { invoice_id: 'AR-2024-002', customer_id: 'CUST-001', customer_name: 'AutoDrive Systems', amount: 142000, issue_date: '2024-01-02', due_date: '2024-02-01', payment_terms_days: 30, days_outstanding: 25, aging_bucket: 'Current', payment_status: 'unpaid' },
+      { invoice_id: 'AR-2024-003', customer_id: 'CUST-002', customer_name: 'AeroTech Components', amount: 310000, issue_date: '2023-12-20', due_date: '2024-01-19', payment_terms_days: 30, days_outstanding: 38, aging_bucket: '1-30 days', payment_status: 'unpaid' },
+      { invoice_id: 'AR-2024-004', customer_id: 'CUST-003', customer_name: 'IndustrialWorks LLC', amount: 87500, issue_date: '2023-12-10', due_date: '2024-01-09', payment_terms_days: 30, days_outstanding: 48, aging_bucket: '31-60 days', payment_status: 'unpaid' },
+      { invoice_id: 'AR-2024-005', customer_id: 'CUST-004', customer_name: 'MachineParts Global', amount: 225000, issue_date: '2023-11-28', due_date: '2023-12-28', payment_terms_days: 30, days_outstanding: 60, aging_bucket: '61-90 days', payment_status: 'overdue' },
+      { invoice_id: 'AR-2024-006', customer_id: 'CUST-002', customer_name: 'AeroTech Components', amount: 198000, issue_date: '2023-11-15', due_date: '2023-12-15', payment_terms_days: 30, days_outstanding: 73, aging_bucket: '61-90 days', payment_status: 'overdue' },
+      { invoice_id: 'AR-2024-007', customer_id: 'CUST-005', customer_name: 'BuildRight Construction', amount: 62000, issue_date: '2023-10-20', due_date: '2023-11-19', payment_terms_days: 30, days_outstanding: 99, aging_bucket: '90+ days', payment_status: 'overdue' },
+      { invoice_id: 'AR-2024-008', customer_id: 'CUST-006', customer_name: 'SteelCraft Inc.', amount: 156000, issue_date: '2024-01-20', due_date: '2024-02-19', payment_terms_days: 30, days_outstanding: 7, aging_bucket: 'Current', payment_status: 'unpaid' },
+      { invoice_id: 'AR-2024-009', customer_id: 'CUST-003', customer_name: 'IndustrialWorks LLC', amount: 45000, issue_date: '2023-10-05', due_date: '2023-11-04', payment_terms_days: 30, days_outstanding: 114, aging_bucket: '90+ days', payment_status: 'overdue' },
+      { invoice_id: 'AR-2024-010', customer_id: 'CUST-007', customer_name: 'Pacific Marine Parts', amount: 93000, issue_date: '2024-01-08', due_date: '2024-02-07', payment_terms_days: 30, days_outstanding: 19, aging_bucket: 'Current', payment_status: 'unpaid' },
+      { invoice_id: 'AR-2024-011', customer_id: 'CUST-004', customer_name: 'MachineParts Global', amount: 167000, issue_date: '2023-12-01', due_date: '2023-12-31', payment_terms_days: 30, days_outstanding: 57, aging_bucket: '31-60 days', payment_status: 'overdue' },
+      { invoice_id: 'AR-2024-012', customer_id: 'CUST-008', customer_name: 'Great Lakes Fabrication', amount: 78000, issue_date: '2023-11-10', due_date: '2023-12-10', payment_terms_days: 30, days_outstanding: 78, aging_bucket: '61-90 days', payment_status: 'overdue' },
+      { invoice_id: 'AR-2024-013', customer_id: 'CUST-009', customer_name: 'Quantum Dynamics', amount: 125000, issue_date: '2024-01-22', due_date: '2024-02-21', payment_terms_days: 30, days_outstanding: 5, aging_bucket: 'Current', payment_status: 'unpaid' },
+      { invoice_id: 'AR-2024-014', customer_id: 'CUST-005', customer_name: 'BuildRight Construction', amount: 38000, issue_date: '2023-09-15', due_date: '2023-10-15', payment_terms_days: 30, days_outstanding: 135, aging_bucket: '90+ days', payment_status: 'collections' },
+      { invoice_id: 'AR-2024-015', customer_id: 'CUST-010', customer_name: 'NorthStar Energy Services', amount: 215000, issue_date: '2024-01-25', due_date: '2024-02-24', payment_terms_days: 30, days_outstanding: 2, aging_bucket: 'Current', payment_status: 'unpaid' },
+      { invoice_id: 'AR-2024-016', customer_id: 'CUST-001', customer_name: 'AutoDrive Systems', amount: 95000, issue_date: '2023-12-28', due_date: '2024-01-27', payment_terms_days: 30, days_outstanding: 31, aging_bucket: '1-30 days', payment_status: 'unpaid' },
+      { invoice_id: 'AR-2024-017', customer_id: 'CUST-006', customer_name: 'SteelCraft Inc.', amount: 112000, issue_date: '2023-12-15', due_date: '2024-01-14', payment_terms_days: 30, days_outstanding: 44, aging_bucket: '31-60 days', payment_status: 'unpaid' },
+      { invoice_id: 'AR-2024-018', customer_id: 'CUST-008', customer_name: 'Great Lakes Fabrication', amount: 54000, issue_date: '2023-09-20', due_date: '2023-10-20', payment_terms_days: 30, days_outstanding: 130, aging_bucket: '90+ days', payment_status: 'collections' },
+    ] as ARInvoice[],
+    ap_invoices: [
+      { invoice_id: 'AP-2024-001', vendor_id: 'VEND-001', vendor_name: 'Steel Dynamics Supply', amount: 195000, invoice_date: '2024-01-20', due_date: '2024-02-19', payment_terms: 'Net 30', payment_terms_days: 30, discount_available: true, discount_pct: 2.0, discount_deadline: '2024-01-30', category: 'raw_materials' },
+      { invoice_id: 'AP-2024-002', vendor_id: 'VEND-002', vendor_name: 'AlumTech Trading', amount: 142000, invoice_date: '2024-01-18', due_date: '2024-03-03', payment_terms: 'Net 45', payment_terms_days: 45, discount_available: false, discount_pct: 0, discount_deadline: null, category: 'raw_materials' },
+      { invoice_id: 'AP-2024-003', vendor_id: 'VEND-003', vendor_name: 'CoatPro Industries', amount: 38000, invoice_date: '2024-01-15', due_date: '2024-02-14', payment_terms: 'Net 30', payment_terms_days: 30, discount_available: true, discount_pct: 1.5, discount_deadline: '2024-01-25', category: 'coatings' },
+      { invoice_id: 'AP-2024-004', vendor_id: 'VEND-004', vendor_name: 'Precision Tools Co.', amount: 85000, invoice_date: '2024-01-22', due_date: '2024-03-08', payment_terms: 'Net 45', payment_terms_days: 45, discount_available: false, discount_pct: 0, discount_deadline: null, category: 'tooling' },
+      { invoice_id: 'AP-2024-005', vendor_id: 'VEND-005', vendor_name: 'PowerGrid Electric', amount: 32000, invoice_date: '2024-01-25', due_date: '2024-02-24', payment_terms: 'Net 30', payment_terms_days: 30, discount_available: false, discount_pct: 0, discount_deadline: null, category: 'utilities' },
+      { invoice_id: 'AP-2024-006', vendor_id: 'VEND-001', vendor_name: 'Steel Dynamics Supply', amount: 210000, invoice_date: '2024-01-05', due_date: '2024-02-04', payment_terms: 'Net 30', payment_terms_days: 30, discount_available: true, discount_pct: 2.0, discount_deadline: '2024-01-15', category: 'raw_materials' },
+      { invoice_id: 'AP-2024-007', vendor_id: 'VEND-006', vendor_name: 'FastShip Logistics', amount: 28000, invoice_date: '2024-01-12', due_date: '2024-02-11', payment_terms: 'Net 30', payment_terms_days: 30, discount_available: false, discount_pct: 0, discount_deadline: null, category: 'logistics' },
+      { invoice_id: 'AP-2024-008', vendor_id: 'VEND-007', vendor_name: 'SafeChem Solutions', amount: 15000, invoice_date: '2024-01-10', due_date: '2024-02-09', payment_terms: 'Net 30', payment_terms_days: 30, discount_available: false, discount_pct: 0, discount_deadline: null, category: 'chemicals' },
+      { invoice_id: 'AP-2024-009', vendor_id: 'VEND-008', vendor_name: 'WeldTech Supplies', amount: 42000, invoice_date: '2024-01-08', due_date: '2024-02-22', payment_terms: 'Net 45', payment_terms_days: 45, discount_available: true, discount_pct: 1.0, discount_deadline: '2024-01-18', category: 'consumables' },
+      { invoice_id: 'AP-2024-010', vendor_id: 'VEND-009', vendor_name: 'InsureCo Business', amount: 18000, invoice_date: '2024-01-01', due_date: '2024-01-31', payment_terms: 'Net 30', payment_terms_days: 30, discount_available: false, discount_pct: 0, discount_deadline: null, category: 'insurance' },
+      { invoice_id: 'AP-2024-011', vendor_id: 'VEND-010', vendor_name: 'MachineMaintenance Pro', amount: 55000, invoice_date: '2024-01-14', due_date: '2024-02-28', payment_terms: 'Net 45', payment_terms_days: 45, discount_available: false, discount_pct: 0, discount_deadline: null, category: 'maintenance' },
+      { invoice_id: 'AP-2024-012', vendor_id: 'VEND-002', vendor_name: 'AlumTech Trading', amount: 168000, invoice_date: '2023-12-28', due_date: '2024-02-11', payment_terms: 'Net 45', payment_terms_days: 45, discount_available: true, discount_pct: 1.5, discount_deadline: '2024-01-12', category: 'raw_materials' },
+    ] as APInvoice[],
+    skus: [
+      { sku_id: 'SKU-001', name: 'Grade A Steel Bar 2"x12\'', quantity_on_hand: 4500, unit_cost: 45, lead_time_days: 21, avg_monthly_demand: 1800, std_monthly_demand: 300, category: 'raw_materials', annual_revenue: 972000 },
+      { sku_id: 'SKU-002', name: '6061-T6 Aluminum Sheet 4x8', quantity_on_hand: 2200, unit_cost: 120, lead_time_days: 28, avg_monthly_demand: 800, std_monthly_demand: 150, category: 'raw_materials', annual_revenue: 1152000 },
+      { sku_id: 'SKU-003', name: 'Precision Gear Assembly PG-200', quantity_on_hand: 350, unit_cost: 285, lead_time_days: 35, avg_monthly_demand: 120, std_monthly_demand: 40, category: 'finished_goods', annual_revenue: 410400 },
+      { sku_id: 'SKU-004', name: 'Hydraulic Cylinder HC-150', quantity_on_hand: 180, unit_cost: 520, lead_time_days: 42, avg_monthly_demand: 60, std_monthly_demand: 20, category: 'finished_goods', annual_revenue: 374400 },
+      { sku_id: 'SKU-005', name: 'Stainless Fastener Kit FK-500', quantity_on_hand: 12000, unit_cost: 8.5, lead_time_days: 14, avg_monthly_demand: 5000, std_monthly_demand: 800, category: 'components', annual_revenue: 510000 },
+      { sku_id: 'SKU-006', name: 'Custom Bracket CB-300', quantity_on_hand: 2800, unit_cost: 32, lead_time_days: 18, avg_monthly_demand: 900, std_monthly_demand: 200, category: 'components', annual_revenue: 345600 },
+      { sku_id: 'SKU-007', name: 'Industrial Coating IC-400', quantity_on_hand: 85, unit_cost: 190, lead_time_days: 25, avg_monthly_demand: 40, std_monthly_demand: 12, category: 'consumables', annual_revenue: 91200 },
+      { sku_id: 'SKU-008', name: 'Titanium Rod TI-6AL-4V 1"dia', quantity_on_hand: 600, unit_cost: 340, lead_time_days: 45, avg_monthly_demand: 100, std_monthly_demand: 35, category: 'raw_materials', annual_revenue: 408000 },
+      { sku_id: 'SKU-009', name: 'Motor Assembly MA-750', quantity_on_hand: 45, unit_cost: 1250, lead_time_days: 56, avg_monthly_demand: 15, std_monthly_demand: 5, category: 'finished_goods', annual_revenue: 225000 },
+      { sku_id: 'SKU-010', name: 'Copper Wire Spool CW-1000', quantity_on_hand: 3500, unit_cost: 65, lead_time_days: 14, avg_monthly_demand: 1200, std_monthly_demand: 250, category: 'raw_materials', annual_revenue: 936000 },
+    ] as SKU[],
+    opening_cash_balance: 2_500_000,
+    monthly_revenue: 1_200_000,
+    monthly_cogs: 720_000,
+    cost_of_capital: 0.08,
+    carrying_cost_rate: 0.25,
+    target_service_level: 0.95,
+    min_cash_threshold: 500_000,
+  }
+}

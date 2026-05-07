@@ -14,24 +14,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Z.ai Code Scaffold - AI-Powered Development",
-  description: "Modern Next.js scaffold optimized for AI-powered development with Z.ai. Built with TypeScript, Tailwind CSS, and shadcn/ui.",
-  keywords: ["Z.ai", "Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "AI development", "React"],
-  authors: [{ name: "Z.ai Team" }],
-  icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
-  },
+  title: "Working Capital Optimizer — AI Agent Mesh for CFO Intelligence",
+  description: "Multi-agent AI system that monitors AR, AP, inventory and cash flow to recommend specific actions that shrink the cash conversion cycle. Traced and self-improving via Arize Phoenix.",
+  keywords: ["working capital", "AI agents", "Gemini", "Arize Phoenix", "cash conversion cycle", "CFO", "manufacturing", "OpenInference"],
+  authors: [{ name: "cubiczan" }],
   openGraph: {
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
-    url: "https://chat.z.ai",
-    siteName: "Z.ai",
+    title: "Working Capital Optimizer",
+    description: "AI agent mesh for CFO-level working capital intelligence",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
+    title: "Working Capital Optimizer",
+    description: "AI agent mesh for CFO-level working capital intelligence",
   },
 };
 
