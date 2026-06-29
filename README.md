@@ -1,5 +1,7 @@
 # Working Capital Optimizer (WCO)
 
+> **Cubiczan stack** — [Profile](https://github.com/Cubiczan) · [Strata](https://github.com/Cubiczan/Strata) · **You are here:** `working-capital-optimizer`
+
 AI agent mesh that monitors accounts receivable, accounts payable, inventory, and cash flow to recommend specific actions that shrink the cash conversion cycle -- traced, evaluated, and self-improving via Arize Phoenix.
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://typescriptlang.org/)
@@ -319,6 +321,15 @@ Contributions are welcome. To contribute:
 5. Run `pytest` for the Python backend
 6. Commit with descriptive messages
 7. Open a Pull Request against the `main` branch
+
+---
+
+## Cubiczan stack
+
+| Finance | [Strata](https://github.com/Cubiczan/Strata) · [Metabocommand](https://github.com/Cubiczan/Metabocommand) · [meshcfo](https://github.com/Cubiczan/meshcfo) · [working-capital-optimizer](https://github.com/Cubiczan/working-capital-optimizer) · [cash-flow-optimizer](https://github.com/Cubiczan/cash-flow-optimizer) · [finance-cockpit](https://github.com/Cubiczan/finance-cockpit) |
+| Governance | [consensus-hardening-protocol](https://github.com/Cubiczan/consensus-hardening-protocol) · [agent-conductor](https://github.com/Cubiczan/agent-conductor) · [compliance-as-code-agent](https://github.com/Cubiczan/compliance-as-code-agent) · [cleanmandate](https://github.com/Cubiczan/cleanmandate) |
+
+WCO shrinks the **cash conversion cycle** — feeds forecasts into [cash-flow-optimizer](https://github.com/Cubiczan/cash-flow-optimizer) and board packets from [meshcfo](https://github.com/Cubiczan/meshcfo).
 
 ## License
 
