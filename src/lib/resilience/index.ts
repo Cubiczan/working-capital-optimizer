@@ -5,27 +5,27 @@ export {
   isResilienceError,
   type ResilienceErrorKind,
   type ResilienceErrorOptions,
-} from "./errors.js";
+} from "./errors";
 
-export { withTimeout } from "./timeout.js";
+export { withTimeout } from "./timeout";
 
-export { retry, computeBackoff, type RetryOptions } from "./retry.js";
+export { retry, computeBackoff, type RetryOptions } from "./retry";
 
 export {
   safeFetch,
   type SafeFetchOptions,
   type AllowlistHook,
-} from "./safeFetch.js";
+} from "./safeFetch";
 
 export {
   SlidingWindowRateLimiter,
   type RateLimitOptions,
   type RateLimitResult,
-} from "./rateLimit.js";
+} from "./rateLimit";
 
 export {
   requireAuth,
   requireAuthResponse,
   type AuthResult,
   type RequireAuthOptions,
-} from "./auth.js";
+} from "./auth";

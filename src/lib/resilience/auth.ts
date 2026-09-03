@@ -1,7 +1,7 @@
 import {
   SlidingWindowRateLimiter,
   type RateLimitOptions,
-} from "./rateLimit.js";
+} from "./rateLimit";
 
 /**
  * Outcome of an auth check. `ok: false` carries the HTTP status and a reason
