@@ -71,6 +71,9 @@ venv/
 # Vendored repos (cloned for reference only)
 repos/
 
+# Rust build output
+wco/agent/rust/target/
+
 # Database files
 db/*.db
 db/*.sqlite
