@@ -51,6 +51,11 @@ dev = [
 [project.scripts]
 wco = "wco.cli:main"
 
+[project.urls]
+Homepage = "https://github.com/Cubiczan/working-capital-optimizer"
+Repository = "https://github.com/Cubiczan/working-capital-optimizer"
+Issues = "https://github.com/Cubiczan/working-capital-optimizer/issues"
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/wco"]
 
