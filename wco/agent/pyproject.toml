@@ -12,7 +12,7 @@ requires-python = ">=3.11"
 authors = [
     { name = "WCO Hackathon Team", email = "team@wco-agent.dev" },
 ]
-keywords = ["working-capital", "ai-agents", "gemini", "phoenix", "arize", "hackathon"]
+keywords = ["working-capital", "ai-agents", "gemini", "phoenix", "arize", "mcp", "cubiczan"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Financial and Insurance Industry",
@@ -50,6 +50,15 @@ dev = [
 
 [project.scripts]
 wco = "wco.cli:main"
+wco-mcp = "wco.mcp.actions_server:main"
+
+[project.entry-points."mcp.servers"]
+wco = "wco.mcp.actions_server:main"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["src"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/wco"]

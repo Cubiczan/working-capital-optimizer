@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.cubiczan/wco-mcp",
+  "description": "Cubiczan Working Capital Optimizer actions: AR, AP, inventory, and cash-conversion recommendations over stdio MCP. Phoenix MCP is traces-only.",
+  "repository": {
+    "url": "https://github.com/Cubiczan/working-capital-optimizer",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@cubiczan/wco-mcp",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

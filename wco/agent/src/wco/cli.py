@@ -8,6 +8,12 @@ Usage::
     # Start the API server
     wco serve
 
+    # Phoenix MCP — trace introspection only (not working-capital actions)
+    wco mcp
+
+    # WCO actions MCP — AR / AP / inventory / cash recommendations
+    wco mcp-actions
+
     # Run evaluation on a stored recommendation
     wco evaluate --recommendation-id <id>
 
@@ -180,6 +186,52 @@ async def _run_evaluation(args: argparse.Namespace) -> None:
     print(json.dumps(result.to_dict(), indent=2, default=str))
 
 
+def cmd_mcp(args: argparse.Namespace) -> None:
+    """Start the Phoenix MCP server for *trace introspection only*.
+
+    This is not the working-capital actions server. AR / AP / inventory /
+    cash recommendations live on ``wco mcp-actions`` / ``@cubiczan/wco-mcp``.
+    """
+    import os
+    import shutil
+    import subprocess
+
+    print(
+        "Phoenix MCP is traces-only (spans, prompts, evals).\n"
+        "For Cubiczan WCO AR/AP/inventory/cash *actions*, use:\n"
+        "  wco mcp-actions\n"
+        "  claude mcp add wco -- npx -y @cubiczan/wco-mcp\n",
+        file=sys.stderr,
+    )
+    npx = shutil.which("npx")
+    if args.print_config or not npx:
+        from pathlib import Path
+
+        config_path = Path(__file__).resolve().parent / "mcp" / "mcp_config.json"
+        print(config_path.read_text())
+        if not npx:
+            logger.error("npx not found — printed Phoenix mcp.json instead of launching")
+            sys.exit(1 if not args.print_config else 0)
+        return
+
+    env = os.environ.copy()
+    cmd = [npx, "-y", "@arizeai/phoenix-mcp"]
+    if args.dry_run:
+        print(" ".join(cmd))
+        return
+    raise SystemExit(subprocess.call(cmd, env=env))
+
+
+def cmd_mcp_actions(args: argparse.Namespace) -> None:
+    """Start the Cubiczan WCO *actions* stdio MCP server.
+
+    Wraps the existing Python mesh. Distinct from ``wco mcp`` (Phoenix traces).
+    """
+    from wco.mcp.actions_server import main as actions_main
+
+    actions_main()
+
+
 def cmd_improve(args: argparse.Namespace) -> None:
     """Run the self-improvement cycle."""
     _setup_logging(args.verbose)
@@ -284,6 +336,30 @@ def build_parser() -> argparse.ArgumentParser:
     p_improve = sub.add_parser("improve", help="Run self-improvement cycle")
     p_improve.add_argument("--verbose", "-v", action="store_true")
     p_improve.set_defaults(func=cmd_improve)
+
+    # mcp — Phoenix traces
+    p_mcp = sub.add_parser(
+        "mcp",
+        help="Start Phoenix MCP (trace introspection only — not WCO actions)",
+    )
+    p_mcp.add_argument(
+        "--print-config",
+        action="store_true",
+        help="Print the Phoenix mcp.json and exit",
+    )
+    p_mcp.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print the npx command without launching Phoenix",
+    )
+    p_mcp.set_defaults(func=cmd_mcp)
+
+    # mcp-actions — working-capital recommendations
+    p_actions = sub.add_parser(
+        "mcp-actions",
+        help="Start Cubiczan WCO actions MCP (AR/AP/inventory/cash recommendations)",
+    )
+    p_actions.set_defaults(func=cmd_mcp_actions)
 
     return parser
 

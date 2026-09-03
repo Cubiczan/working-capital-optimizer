@@ -1,5 +1,12 @@
 {
   "mcpServers": {
+    "wco": {
+      "command": "npx",
+      "args": ["-y", "@cubiczan/wco-mcp"],
+      "env": {
+        "WCO_OFFLINE": "1"
+      }
+    },
     "phoenix": {
       "command": "npx",
       "args": ["-y", "@arizeai/phoenix-mcp"],

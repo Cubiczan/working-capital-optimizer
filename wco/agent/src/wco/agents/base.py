@@ -18,9 +18,6 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from google import genai  # type: ignore[import-untyped]
-from google.genai import types  # type: ignore[import-untyped]
-
 from wco.config import get_settings
 
 logger = logging.getLogger(__name__)
@@ -177,10 +174,21 @@ class GeminiMeshAgent:
         self.model_id = model_id
 
         settings = get_settings()
-        self._client = genai.Client(api_key=settings.gemini_api_key)
+        self._offline = settings.offline_mode
+        self._client = None
+        if not self._offline:
+            from google import genai  # type: ignore[import-untyped]
+
+            self._client = genai.Client(api_key=settings.gemini_api_key)
         self._model = model_id
 
-        logger.info("Initialised agent %r (capability=%s, model=%s)", name, capability.value, model_id)
+        logger.info(
+            "Initialised agent %r (capability=%s, model=%s, offline=%s)",
+            name,
+            capability.value,
+            model_id,
+            self._offline,
+        )
 
     # ── Public API ───────────────────────────────────────────────────────
 
@@ -196,6 +204,34 @@ class GeminiMeshAgent:
         """
         trace_id = uuid.uuid4().hex
         t0 = time.perf_counter()
+
+        if self._offline:
+            from wco.agents.offline import recommend_from_context
+
+            expansion_steps, compression_steps, grounding, reasoning = recommend_from_context(
+                self.capability, context
+            )
+            elapsed_ms = (time.perf_counter() - t0) * 1000
+            result = TurnResult(
+                agent_name=self.name,
+                capability=self.capability,
+                expansion_steps=expansion_steps,
+                compression_steps=compression_steps,
+                grounding_check=grounding,
+                reasoning_trace=reasoning,
+                raw_expand_response="offline:prepare_context",
+                raw_compress_response="offline:recommend_from_context",
+                duration_ms=round(elapsed_ms, 2),
+                trace_id=trace_id,
+            )
+            logger.info(
+                "Agent %r completed offline in %.1f ms (%d expansions, %d compressions)",
+                self.name,
+                elapsed_ms,
+                len(expansion_steps),
+                len(compression_steps),
+            )
+            return result
 
         # Phase 1 — Expand
         raw_expand, expansion_steps = await self._expand(context)
@@ -260,8 +296,12 @@ class GeminiMeshAgent:
 
     # ── Gemini call ──────────────────────────────────────────────────────
 
-    async def _call_gemini(self, user_prompt: str) -> types.GenerateContentResponse:
+    async def _call_gemini(self, user_prompt: str) -> Any:
         """Send a prompt to Gemini and return the response."""
+        from google.genai import types  # type: ignore[import-untyped]
+
+        if self._client is None:
+            raise RuntimeError("Gemini client is not initialised (offline mode).")
         response = await self._client.aio.models.generate_content(
             model=self._model,
             contents=user_prompt,

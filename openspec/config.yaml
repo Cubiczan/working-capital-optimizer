@@ -1,0 +1,10 @@
+schema: spec-driven
+
+# Cubiczan Working Capital Optimizer — living specs for capabilities we touch.
+# Brownfield: do not generate specs for the whole existing codebase.
+
+context: |
+  Brand is Cubiczan (never CubicZan).
+  CHP is the lock; MCP is the pipe.
+  Phoenix MCP (`wco mcp` / @arizeai/phoenix-mcp) is traces-only.
+  WCO actions MCP (@cubiczan/wco-mcp) exposes AR / AP / inventory / cash recommendations.

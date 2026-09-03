@@ -1,0 +1,56 @@
+{
+  "name": "@cubiczan/wco-mcp",
+  "version": "0.1.0",
+  "description": "Cubiczan Working Capital Optimizer actions MCP — AR / AP / inventory / cash-conversion recommendations over stdio. Phoenix MCP is traces-only; this server is the action pipe.",
+  "mcpName": "io.github.cubiczan/wco-mcp",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "wco-mcp": "./bin/wco-mcp.js"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md",
+    "LICENSE",
+    "mcp.json",
+    "server.json"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node -e \"const fs=require('fs');const p='dist/index.js';let t=fs.readFileSync(p,'utf8');if(!t.startsWith('#!'))fs.writeFileSync(p,'#!/usr/bin/env node\\n'+t);fs.chmodSync(p,0o755)\"",
+    "start": "node bin/wco-mcp.js",
+    "dev": "node bin/wco-mcp.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "mcp-server",
+    "working-capital",
+    "cash-conversion-cycle",
+    "accounts-receivable",
+    "accounts-payable",
+    "inventory",
+    "cubiczan",
+    "wco",
+    "claude",
+    "cursor"
+  ],
+  "author": "Shyam Desigan <sam@cubiczan.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cubiczan/working-capital-optimizer.git",
+    "directory": "packages/wco-mcp"
+  },
+  "homepage": "https://github.com/Cubiczan/working-capital-optimizer/tree/main/packages/wco-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/Cubiczan/working-capital-optimizer/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

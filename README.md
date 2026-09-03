@@ -87,7 +87,7 @@ The Cash Flow Agent depends on all three domain agents. The orchestrator uses Ka
 | Database | CockroachDB (via asyncpg + SQLAlchemy) |
 | Schema Validation | Pydantic v2 |
 | LLM Framework | LangChain Google GenAI |
-| MCP | Phoenix MCP Server |
+| MCP | Cubiczan WCO actions (`@cubiczan/wco-mcp`) + Phoenix traces (`@arizeai/phoenix-mcp`) |
 
 ## Key Features
 
@@ -113,8 +113,8 @@ The Cash Flow Agent depends on all three domain agents. The orchestrator uses Ka
 
 - Python 3.11+
 - Bun 1.0+ or Node.js 20+
-- Google Gemini API key
-- Arize Phoenix Cloud account (free tier works)
+- Google Gemini API key (optional when `WCO_OFFLINE=1` — fixture recommendations still run)
+- Arize Phoenix Cloud account (free tier works; traces only)
 
 ### Installation
 
@@ -172,9 +172,74 @@ wco analyze --data-file src/wco/data/sample_data.json
 # Start the FastAPI server
 wco serve
 
-# Start the Phoenix MCP server for trace introspection
+# Phoenix MCP — trace introspection only (spans / prompts / evals)
 wco mcp
+
+# WCO actions MCP — AR / AP / inventory / cash-conversion recommendations
+wco mcp-actions
 ```
+
+## MCP: actions vs Phoenix traces
+
+CHP is the lock; MCP is the pipe. WCO follows the same split as
+[`@cubiczan/chp-mcp`](https://github.com/icohangar-ops/cubiczan-chp-mcp):
+the Python mesh is the engine; stdio MCP is only transport.
+
+**Phoenix MCP is traces-only.** `wco mcp` / `npx -y @arizeai/phoenix-mcp`
+introspects OpenInference spans. It does **not** recommend working-capital
+actions and is not wrapped by the actions server.
+
+**WCO actions MCP** (`@cubiczan/wco-mcp` / `wco mcp-actions` / `wco-mcp`)
+runs the existing specialists and returns product-native recommendations.
+
+| Server | Install | Returns |
+|--------|---------|---------|
+| WCO actions | `npx -y @cubiczan/wco-mcp` or `wco mcp-actions` | AR / AP / inventory / cash **actions** |
+| Phoenix | `wco mcp` or `npx -y @arizeai/phoenix-mcp` | **Traces** only |
+
+### Cursor / Claude Desktop
+
+```json
+{
+  "mcpServers": {
+    "wco": {
+      "command": "npx",
+      "args": ["-y", "@cubiczan/wco-mcp"],
+      "env": {
+        "WCO_OFFLINE": "1"
+      }
+    }
+  }
+}
+```
+
+From a clone (until npm publish):
+
+```json
+{
+  "mcpServers": {
+    "wco": {
+      "command": "node",
+      "args": ["/absolute/path/to/working-capital-optimizer/packages/wco-mcp/bin/wco-mcp.js"],
+      "env": {
+        "WCO_OFFLINE": "1"
+      }
+    }
+  }
+}
+```
+
+### Claude Code
+
+```bash
+claude mcp add wco -- npx -y @cubiczan/wco-mcp
+```
+
+Packaging is prepared as `@cubiczan/wco-mcp` (alias intent:
+`@cubiczan/working-capital-optimizer-mcp`). Do not publish from an unreviewed
+agent run — see `packages/wco-mcp/PUBLISH.md`.
+
+Brand: **Cubiczan**.
 
 ### API Endpoints
 
@@ -219,8 +284,9 @@ wco mcp
 ### Environment Variables
 
 ```env
-# Google Gemini
+# Google Gemini (optional when WCO_OFFLINE=1)
 GEMINI_API_KEY=your-gemini-api-key-here
+# WCO_OFFLINE=1
 
 # Arize Phoenix Cloud
 PHOENIX_API_KEY=your-phoenix-api-key-here
@@ -252,7 +318,7 @@ working-capital-optimizer/
 │   └── agent/
 │       ├── pyproject.toml      # Python package (wco-agent)
 │       └── src/wco/
-│           ├── cli.py          # CLI entry point (wco analyze, wco serve)
+│           ├── cli.py          # CLI (wco analyze, serve, mcp, mcp-actions)
 │           ├── config.py       # Pydantic settings (Gemini, Phoenix, CockroachDB)
 │           ├── agents/
 │           │   ├── base.py          # GeminiMeshAgent base class
@@ -275,7 +341,12 @@ working-capital-optimizer/
 │           ├── data/
 │           │   └── sample_data.py  # Sample AR/AP/invoice data
 │           └── mcp/
-│               └── mcp_config.json # Phoenix MCP server config
+│               ├── actions_server.py  # Stdio actions MCP (not Phoenix)
+│               ├── actions.py         # Wraps AR/AP/inventory/cash agents
+│               ├── mcp_config.json    # Cursor mcp.json (wco + phoenix)
+│               └── phoenix helper     # traces-only notes
+├── packages/
+│   └── wco-mcp/                # @cubiczan/wco-mcp stdio launcher
 ├── src/
 │   ├── app/
 │   │   ├── layout.tsx          # Root layout

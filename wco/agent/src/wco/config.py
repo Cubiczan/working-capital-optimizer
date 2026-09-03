@@ -27,8 +27,15 @@ class Settings(BaseSettings):
 
     # ── Gemini ────────────────────────────────────────────────────────────
     gemini_api_key: str = Field(
-        ...,
-        description="Google Gemini API key (required). Set GEMINI_API_KEY env var.",
+        default="",
+        description=(
+            "Google Gemini API key. Optional when WCO_OFFLINE=1 or when running "
+            "the actions MCP against fixture data."
+        ),
+    )
+    wco_offline: bool = Field(
+        default=False,
+        description="Force the offline / fixture recommendation path (WCO_OFFLINE=1).",
     )
 
     # ── Arize Phoenix Cloud ──────────────────────────────────────────────
@@ -92,6 +99,16 @@ class Settings(BaseSettings):
         """Return ``True`` when a Phoenix API key has been configured."""
         return bool(self.phoenix_api_key)
 
+    @property
+    def gemini_available(self) -> bool:
+        """Return ``True`` when a Gemini key is present and offline is not forced."""
+        return bool(self.gemini_api_key) and not self.wco_offline
+
+    @property
+    def offline_mode(self) -> bool:
+        """Return ``True`` when tools should skip live Gemini calls."""
+        return self.wco_offline or not self.gemini_api_key
+
 
 # Singleton — re-imported throughout the codebase
 _settings: Settings | None = None
@@ -107,3 +124,9 @@ def get_settings() -> Settings:
     if _settings is None:
         _settings = Settings()
     return _settings
+
+
+def reset_settings() -> None:
+    """Drop the cached settings singleton (tests / process reuse)."""
+    global _settings
+    _settings = None
