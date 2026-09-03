@@ -18,17 +18,13 @@ export default function Home() {
     runAnalysis, checkHealth, reset,
   } = useWCOStore()
 
-  const [mounted, setMounted] = useState(false)
-
   useEffect(() => {
-    setMounted(true)
     checkHealth()
     const interval = setInterval(checkHealth, 15000)
     return () => clearInterval(interval)
   }, [checkHealth])
 
   const handleRun = () => {
-    if (!mounted) return
     reset()
     runAnalysis()
   }

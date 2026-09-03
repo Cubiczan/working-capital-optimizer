@@ -45,6 +45,40 @@ class Settings(BaseSettings):
         description="Base URL of the Phoenix Cloud instance.",
     )
 
+    # ── UiPath ───────────────────────────────────────────────────────────
+    uipath_client_id: str | None = Field(
+        default=None,
+        description="Optional UiPath Automation Cloud client ID.",
+    )
+    uipath_client_secret: SecretStr | None = Field(
+        default=None,
+        description="Optional UiPath client secret.",
+    )
+    uipath_organization_name: str | None = Field(
+        default=None,
+        description="UiPath organization name used in API URLs.",
+    )
+    uipath_tenant_name: str | None = Field(
+        default=None,
+        description="UiPath tenant name used in API URLs.",
+    )
+    uipath_release_key: str | None = Field(
+        default=None,
+        description="Default UiPath release key to start.",
+    )
+    uipath_folder_key: str | None = Field(
+        default=None,
+        description="Optional UiPath folder key header for modern folders.",
+    )
+    uipath_base_url: str = Field(
+        default="https://cloud.uipath.com",
+        description="Base URL for UiPath Automation Cloud.",
+    )
+    uipath_scope: str = Field(
+        default="OR.Default OR.Jobs",
+        description="Space-separated OAuth scopes for UiPath client credentials.",
+    )
+
     # ── CockroachDB ─────────────────────────────────────────────────────
     cockroachdb_username: str = Field(
         default="cubiczan",

@@ -115,6 +115,7 @@ The Cash Flow Agent depends on all three domain agents. The orchestrator uses Ka
 - Bun 1.0+ or Node.js 20+
 - Google Gemini API key
 - Arize Phoenix Cloud account (free tier works)
+- Optional UiPath Automation Cloud app credentials for Outlook / OneDrive handoff automation
 
 ### Installation
 
@@ -185,6 +186,7 @@ wco mcp
 | GET | `/api/wco/recommendations` | List past recommendations (limit 50) |
 | GET | `/api/wco/evaluations` | List past evaluation scores |
 | GET | `/api/wco/health` | Backend health check (agent readiness, DB status) |
+| POST | `/api/uipath/start` | Start a configured UiPath process for inbox/document handoff |
 
 ### Analysis Request Format
 
@@ -226,6 +228,16 @@ GEMINI_API_KEY=your-gemini-api-key-here
 PHOENIX_API_KEY=your-phoenix-api-key-here
 PHOENIX_PROJECT_NAME=wco-agent
 PHOENIX_BASE_URL=https://app.phoenix.arize.com
+
+# UiPath Automation Cloud (optional)
+UIPATH_CLIENT_ID=your_uipath_app_id_here
+UIPATH_CLIENT_SECRET=your_uipath_app_secret_here
+UIPATH_ORGANIZATION_NAME=your_uipath_org_name_here
+UIPATH_TENANT_NAME=your_uipath_tenant_name_here
+UIPATH_RELEASE_KEY=your_uipath_release_key_here
+UIPATH_FOLDER_KEY=your_uipath_folder_key_here
+UIPATH_BASE_URL=https://cloud.uipath.com
+UIPATH_SCOPE=OR.Default OR.Jobs
 
 # CockroachDB
 COCKROACHDB_USERNAME=your-username

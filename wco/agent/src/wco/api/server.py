@@ -19,6 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from wco.agents import ARAgent, APAgent, CashFlowAgent, InventoryAgent
+from wco.integrations.uipath import UiPathError, uipath_client_from_settings
 from wco.orchestration import WorkingCapitalOrchestrator
 from wco.eval.evaluator import RecommendationEvaluator
 
@@ -98,6 +99,17 @@ class HealthResponse(BaseModel):
     database_connected: bool = False
 
 
+class UiPathStartRequest(BaseModel):
+    """Payload for launching a UiPath job from WCO."""
+
+    release_key: Optional[str] = None
+    input_arguments: dict[str, Any] = Field(default_factory=dict)
+    robot_ids: list[int] = Field(default_factory=list)
+    jobs_count: int = 0
+    strategy: str = "Specific"
+    folder_key: Optional[str] = None
+
+
 # ── Startup ───────────────────────────────────────────────────────────────
 
 
@@ -134,6 +146,38 @@ async def health() -> HealthResponse:
         agents_ready=True,
         database_connected=app.state.db_connected,
     )
+
+
+@app.post("/api/uipath/start")
+async def start_uipath_job(request: UiPathStartRequest) -> dict[str, Any]:
+    """Start a UiPath Orchestrator job using configured credentials."""
+
+    from wco.config import get_settings
+
+    settings = get_settings()
+    client = uipath_client_from_settings(settings)
+    if client is None:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "UiPath is not configured. Set UIPATH_CLIENT_ID, UIPATH_CLIENT_SECRET, "
+                "UIPATH_ORGANIZATION_NAME, and UIPATH_TENANT_NAME."
+            ),
+        )
+
+    try:
+        result = await client.start_job(
+            release_key=request.release_key,
+            input_arguments=request.input_arguments or None,
+            robot_ids=request.robot_ids,
+            jobs_count=request.jobs_count,
+            strategy=request.strategy,
+            folder_key=request.folder_key,
+        )
+        return {"status": "ok", "provider": "uipath", "result": result}
+    except UiPathError as exc:
+        logger.exception("UiPath start failed: %s", exc)
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
 
 
 @app.post("/api/analyze")
