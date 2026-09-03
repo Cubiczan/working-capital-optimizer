@@ -1,6 +1,5 @@
-"""Phoenix MCP client for runtime trace introspection.
+"""WCO MCP helpers."""
 
-Provides a ``PhoenixMCPClient`` that connects to the Arize Phoenix
-MCP server (cloud-hosted or local) and allows the WCO agent to query
-its own traces, evaluations, and performance data at runtime.
-"""
+from wco.mcp.server import main, serve
+
+__all__ = ["main", "serve"]

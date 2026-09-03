@@ -187,6 +187,13 @@ def cmd_improve(args: argparse.Namespace) -> None:
     asyncio.run(_run_improvement())
 
 
+def cmd_mcp(args: argparse.Namespace) -> None:
+    """Start the stdio MCP server."""
+    from wco.mcp import main as mcp_main
+
+    mcp_main([])
+
+
 async def _run_improvement() -> None:
     """Execute the self-improvement cycle and print results."""
     from wco.eval.self_improvement import SelfImprovementEngine
@@ -284,6 +291,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_improve = sub.add_parser("improve", help="Run self-improvement cycle")
     p_improve.add_argument("--verbose", "-v", action="store_true")
     p_improve.set_defaults(func=cmd_improve)
+
+    p_mcp = sub.add_parser("mcp", help="Start the MCP server")
+    p_mcp.set_defaults(func=cmd_mcp)
 
     return parser
 
