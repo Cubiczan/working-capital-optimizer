@@ -12,6 +12,8 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
+from wco.rust_core import run_rust_core
+
 from wco.agents.base import (
     AgentCapability,
     GeminiMeshAgent,
@@ -250,8 +252,14 @@ class WorkingCapitalOrchestrator:
         elapsed = (time.perf_counter() - t0) * 1000
 
         # ── Assemble report ──────────────────────────────────────────
-        ccc = self._extract_ccc(turns)
-        recommendations = self._extract_recommendations(turns)
+        summary = run_rust_core(
+            "summarize-orchestration",
+            {
+                "turns": [self._serialise_turn(turn) for turn in turns],
+            },
+        )
+        ccc = summary.get("cash_conversion_cycle", {}) if summary else {}
+        recommendations = summary.get("recommendations", []) if summary else []
 
         report = OrchestrationReport(
             problem=data.get("problem_description", "Working capital optimization analysis"),
@@ -331,48 +339,6 @@ class WorkingCapitalOrchestrator:
         from wco.orchestration.context import ContextEngine
 
         return ContextEngine._dataclass_to_dict(turn)
-
-    @staticmethod
-    def _extract_ccc(turns: list[TurnResult]) -> dict[str, float]:
-        """Try to extract CCC components from agent results.
-
-        Falls back to zero values if not found in the LLM output.
-        """
-        ccc: dict[str, float] = {"dso": 0, "dio": 0, "dpo": 0, "ccc": 0}
-
-        # Look for CCC data in the CashFlow agent's raw response
-        for turn in turns:
-            if turn.capability == AgentCapability.CASHFLOW:
-                # Check compression steps for CCC-related insights
-                for step in turn.compression_steps:
-                    text = (step.insight + step.recommendation + step.expected_impact).lower()
-                    for key in ("dso", "dio", "dpo", "ccc", "cash conversion cycle"):
-                        # Try to extract numeric value
-                        import re
-
-                        pattern = rf"{key}\s*(?:is|:|=|=~)?\s*(\d+\.?\d*)"
-                        match = re.search(pattern, text)
-                        if match:
-                            ccc[key] = float(match.group(1))
-        return ccc
-
-    @staticmethod
-    def _extract_recommendations(turns: list[TurnResult]) -> list[dict[str, Any]]:
-        """Flatten all compression steps into a single recommendation list."""
-        recs: list[dict[str, Any]] = []
-        for turn in turns:
-            for step in turn.compression_steps:
-                recs.append(
-                    {
-                        "agent": turn.agent_name,
-                        "capability": turn.capability.value,
-                        "insight": step.insight,
-                        "recommendation": step.recommendation,
-                        "expected_impact": step.expected_impact,
-                        "confidence": step.confidence.value,
-                    }
-                )
-        return recs
 
 
 # Avoid circular import

@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import Any
 
 from wco.agents.base import AgentCapability, GeminiMeshAgent
+from wco.rust_core import run_rust_core
 
 # ── System Prompt ─────────────────────────────────────────────────────────
 
@@ -84,6 +85,17 @@ class CashFlowAgent(GeminiMeshAgent):
         Returns:
             Enriched context dict for ``self.run()``.
         """
+        rust_context = run_rust_core("cashflow-context", raw_data)
+        if rust_context is not None:
+            rust_context.update(
+                {
+                    "ar_analysis_summary": self._summarise_agent_result(ar_result),
+                    "ap_analysis_summary": self._summarise_agent_result(ap_result),
+                    "inventory_analysis_summary": self._summarise_agent_result(inventory_result),
+                }
+            )
+            return rust_context
+
         # ── Basic CCC calculation ────────────────────────────────────
         monthly_revenue = raw_data.get("monthly_revenue", 0)
         monthly_cogs = raw_data.get("monthly_cogs", 0)

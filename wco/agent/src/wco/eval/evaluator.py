@@ -23,6 +23,7 @@ from google.genai import types  # type: ignore[import-untyped]
 from pydantic import BaseModel, Field
 
 from wco.config import get_settings
+from wco.rust_core import run_rust_core
 
 logger = logging.getLogger(__name__)
 
@@ -311,6 +312,16 @@ Evaluate this recommendation on all four dimensions. Be rigorous and fair."""
         """Compute the weighted overall score."""
         if not scores:
             return 0.0
+
+        rust_result = run_rust_core(
+            "evaluate-overall",
+            {"scores": [score.model_dump() for score in scores]},
+        )
+        if rust_result is not None:
+            overall = rust_result.get("overall_score")
+            if isinstance(overall, (int, float)):
+                return float(overall)
+
         total_weight = 0.0
         weighted_sum = 0.0
         for s in scores:

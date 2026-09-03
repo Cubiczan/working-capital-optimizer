@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Any
 
 from wco.agents.base import AgentCapability, GeminiMeshAgent
+from wco.rust_core import run_rust_core
 
 # ── System Prompt ─────────────────────────────────────────────────────────
 
@@ -70,6 +71,10 @@ class InventoryAgent(GeminiMeshAgent):
         Returns:
             Context dict ready for ``self.run()``.
         """
+        rust_context = run_rust_core("inventory-context", raw_data)
+        if rust_context is not None:
+            return rust_context
+
         skus = raw_data.get("skus", [])
         monthly_cogs = raw_data.get("monthly_cogs", 0)
         carrying_cost_rate = raw_data.get("carrying_cost_rate", 0.25)

@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import Any
 
 from wco.agents.base import AgentCapability, GeminiMeshAgent
+from wco.rust_core import run_rust_core
 
 # ── System Prompt ─────────────────────────────────────────────────────────
 
@@ -70,6 +71,10 @@ class APAgent(GeminiMeshAgent):
         Returns:
             Context dict ready for ``self.run()``.
         """
+        rust_context = run_rust_core("ap-context", raw_data)
+        if rust_context is not None:
+            return rust_context
+
         invoices = raw_data.get("ap_invoices", [])
         monthly_cogs = raw_data.get("monthly_cogs", 0)
 

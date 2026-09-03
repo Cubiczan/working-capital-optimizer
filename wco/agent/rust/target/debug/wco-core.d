@@ -1,0 +1,1 @@
+/Users/cubiczan/Documents/Default\ Project/repos/working-capital-optimizer/wco/agent/rust/target/debug/wco-core: /Users/cubiczan/Documents/Default\ Project/repos/working-capital-optimizer/wco/agent/rust/src/lib.rs /Users/cubiczan/Documents/Default\ Project/repos/working-capital-optimizer/wco/agent/rust/src/main.rs

@@ -12,9 +12,11 @@ import re
 import threading
 import time
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field, is_dataclass
 from enum import Enum
 from typing import Any
+
+from wco.rust_core import select_context as select_context_rust
 
 
 class EntryKind(str, Enum):
@@ -154,7 +156,14 @@ class ContextEngine:
         Returns:
             Entries sorted by relevance score (descending).
         """
-        query_terms = self._tokenise(query)
+        def _tokenise(text: str) -> set[str]:
+            tokens = set(re.findall(r"[a-z0-9_]+", text.lower()))
+            return {token for token in tokens if len(token) > 1}
+
+        def _overlap_score(query_terms: set[str], doc_terms: set[str]) -> float:
+            if not query_terms:
+                return 0.0
+            return len(query_terms & doc_terms) / len(query_terms)
 
         with self._lock:
             candidates = list(self._store)
@@ -165,15 +174,37 @@ class ContextEngine:
         if source_agent is not None:
             candidates = [e for e in candidates if e.source_agent == source_agent]
 
-        # Score by lexical overlap
-        scored: list[tuple[float, ContextEntry]] = []
-        for entry in candidates:
-            doc_terms = self._tokenise(entry.text + " " + entry.key)
-            score = self._overlap_score(query_terms, doc_terms)
-            scored.append((score, entry))
+        payload_entries = [
+            {
+                "entry_id": entry.entry_id,
+                "kind": entry.kind.value,
+                "source_agent": entry.source_agent,
+                "key": entry.key,
+                "text": entry.text,
+            }
+            for entry in candidates
+        ]
 
-        scored.sort(key=lambda x: x[0], reverse=True)
-        return [entry for _, entry in scored[:top_k]]
+        selected_ids = select_context_rust(
+            payload_entries,
+            query,
+            kind=kind.value if kind is not None else None,
+            source_agent=source_agent,
+            top_k=top_k,
+        )
+        if selected_ids is not None:
+            index = {entry.entry_id: entry for entry in candidates}
+            return [index[entry_id] for entry_id in selected_ids if entry_id in index]
+
+        query_terms = _tokenise(query)
+        scored: list[tuple[float, int, ContextEntry]] = []
+        for i, entry in enumerate(candidates):
+            doc_terms = _tokenise(entry.text + " " + entry.key)
+            score = _overlap_score(query_terms, doc_terms)
+            scored.append((score, i, entry))
+
+        scored.sort(key=lambda x: (-x[0], x[1]))
+        return [entry for _, _, entry in scored[:top_k]]
 
     # ── Snapshot ─────────────────────────────────────────────────────────
 
@@ -195,10 +226,7 @@ class ContextEngine:
         for entry in entries:
             # Serialise dataclass values to dicts
             val = entry.value
-            if hasattr(val, "__dataclass_fields__"):
-                val = self._dataclass_to_dict(val)
-            elif isinstance(val, list):
-                val = [self._dataclass_to_dict(v) if hasattr(v, "__dataclass_fields__") else v for v in val]
+            val = _to_jsonable(val)
             snapshot[entry.key] = {
                 "value": val,
                 "kind": entry.kind.value,
@@ -231,31 +259,17 @@ class ContextEngine:
     # ── Lexical scoring helpers ──────────────────────────────────────────
 
     @staticmethod
-    def _tokenise(text: str) -> set[str]:
-        """Lowercase, split on non-alphanumeric, remove short tokens."""
-        tokens = set(re.findall(r"[a-z0-9_]+", text.lower()))
-        return {t for t in tokens if len(t) > 1}
-
-    @staticmethod
-    def _overlap_score(query: set[str], doc: set[str]) -> float:
-        """Jaccard-inspired overlap between query and document tokens."""
-        if not query:
-            return 0.0
-        intersection = query & doc
-        return len(intersection) / len(query)
-
-    @staticmethod
     def _dataclass_to_dict(obj: Any) -> Any:
-        """Recursively convert a dataclass to a dict."""
-        if hasattr(obj, "__dataclass_fields__"):
-            return {
-                k: ContextEngine._dataclass_to_dict(getattr(obj, k))
-                for k in obj.__dataclass_fields__
-            }
-        if isinstance(obj, list):
-            return [ContextEngine._dataclass_to_dict(v) for v in obj]
-        if isinstance(obj, dict):
-            return {k: ContextEngine._dataclass_to_dict(v) for k, v in obj.items()}
-        if isinstance(obj, Enum):
-            return obj.value
-        return obj
+        """Backwards-compatible JSON serializer for dataclasses and enums."""
+        return _to_jsonable(obj)
+
+def _to_jsonable(obj: Any) -> Any:
+    if is_dataclass(obj):
+        obj = asdict(obj)
+    if isinstance(obj, dict):
+        return {k: _to_jsonable(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_to_jsonable(v) for v in obj]
+    if isinstance(obj, Enum):
+        return obj.value
+    return obj
